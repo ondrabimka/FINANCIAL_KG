@@ -99,6 +99,7 @@ class TickerHandler(yf.Ticker):
             The institutional holders information.
         """
         institutional_holders = self.ticker.institutional_holders
+        institutional_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value", "ticker"]
         return institutional_holders
 
     def prepare_mutualfund_holders(self) -> pd.DataFrame:
@@ -111,6 +112,7 @@ class TickerHandler(yf.Ticker):
             The mutual fund holders information.
         """
         mutualfund_holders = self.ticker.mutualfund_holders
+        mutualfund_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value", "ticker"]
         return mutualfund_holders
 
     def prepare_insider_transactions(self) -> pd.DataFrame:
@@ -123,6 +125,7 @@ class TickerHandler(yf.Ticker):
             The insider transactions information.
         """
         insider_transactions = self.ticker.insider_transactions
+        insider_transactions.columns = ["shares", "value", "text", "position", "transaction", "startDate", "ownership"]
         return insider_transactions
 
     def prepare_insider_roster_holders(self) -> pd.DataFrame:
@@ -135,6 +138,17 @@ class TickerHandler(yf.Ticker):
             The insider roster holders information.
         """
         insider_roster_holders = self.ticker.insider_roster_holders
+        insider_roster_holders.columns = [
+            "name",
+            "position",
+            "mostRecentTransaction",
+            "latestTransactionDate",
+            "sharesOwnedDirectly",
+            "positionDirectDate",
+            "sharesOwnedIndirectly",
+            "positionIndirectDate",
+            "ticker",
+        ]
         return insider_roster_holders
 
     @staticmethod
