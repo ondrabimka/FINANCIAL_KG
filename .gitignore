@@ -74,3 +74,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Data
+data/
+
+# Vscode
+.vscode/
