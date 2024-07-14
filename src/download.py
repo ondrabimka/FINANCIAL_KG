@@ -55,7 +55,12 @@ class AsyncDataDownloader:
         return ticker_info, insider_holder, mutual_fund, institution, insider_transaction
 
     async def save_data(self, data, file_name):
-        data.to_csv(DATA_DIR / file_name, index=False)
+        """
+        Saves the data to the given file path. The file path is created based on the current date.
+        """
+        current_date = pd.Timestamp.now().strftime("%Y-%m-%d")
+        file_path = DATA_DIR / f"data_{current_date}" / file_name
+        data.to_csv(file_path, index=False)
 
     async def download_all_data(self):
         tasks = []

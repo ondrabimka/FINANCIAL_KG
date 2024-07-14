@@ -80,3 +80,6 @@ data/
 
 # Vscode
 .vscode/
+
+# MacOs
+.DS_Store

@@ -8,20 +8,20 @@ memgraph = Memgraph()
 class Ticker(Node):
     __label__ = "Ticker"
     ticker: str = Field(index=True, exists=True, unique=True, db=memgraph)
-    address1: str = Field()
-    city: str = Field()
-    state: str = Field()
-    zip: str = Field()
-    country: str = Field()
-    phone: str = Field()
-    website: str = Field()
-    industry: str = Field()
-    industryKey: str = Field()
-    industryDisp: str = Field()
-    sector: str = Field()
-    sectorKey: str = Field()
-    sectorDisp: str = Field()
-    longBusinessSummary: str = Field()
+    address1: Optional[str] = Field()
+    city: Optional[str] = Field()
+    state: Optional[str] = Field()
+    zip: Optional[str] = Field()
+    country: Optional[str] = Field()
+    phone: Optional[str] = Field()
+    website: Optional[str] = Field()
+    industry: Optional[str] = Field()
+    industryKey: Optional[str] = Field()
+    industryDisp: Optional[str] = Field()
+    sector: Optional[str] = Field()
+    sectorKey: Optional[str] = Field()
+    sectorDisp: Optional[str] = Field()
+    longBusinessSummary: Optional[str] = Field()
     fullTimeEmployees: Optional[int] = Field()
     auditRisk: Optional[int] = Field()
     boardRisk: Optional[int] = Field()
@@ -91,7 +91,7 @@ class Ticker(Node):
     trailingEps: Optional[float] = Field()
     forwardEps: Optional[float] = Field()
     pegRatio: Optional[float] = Field()
-    lastSplitFactor: str = Field()
+    lastSplitFactor: Optional[str] = Field()
     lastSplitDate: Optional[int] = Field()
     enterpriseToRevenue: Optional[float] = Field()
     enterpriseToEbitda: Optional[float] = Field()
@@ -99,16 +99,16 @@ class Ticker(Node):
     SandP52WeekChange: Optional[float] = Field()
     lastDividendValue: Optional[float] = Field()
     lastDividendDate: Optional[int] = Field()
-    exchange: str = Field()
-    quoteType: str = Field()
-    underlyingSymbol: str = Field()
-    shortName: str = Field()
-    longName: str = Field()
+    exchange: Optional[str] = Field()
+    quoteType: Optional[str] = Field()
+    underlyingSymbol: Optional[str] = Field()
+    shortName: Optional[str] = Field()
+    longName: Optional[str] = Field()
     firstTradeDateEpochUtc: Optional[int] = Field()
-    timeZoneFullName: str = Field()
-    timeZoneShortName: str = Field()
-    uuid: str = Field()
-    messageBoardId: str = Field()
+    timeZoneFullName: Optional[str] = Field()
+    timeZoneShortName: Optional[str] = Field()
+    uuid: Optional[str] = Field()
+    messageBoardId: Optional[str] = Field()
     gmtOffSetMilliseconds: Optional[int] = Field()
     currentPrice: Optional[float] = Field()
     targetHighPrice: Optional[float] = Field()
@@ -116,7 +116,7 @@ class Ticker(Node):
     targetMeanPrice: Optional[float] = Field()
     targetMedianPrice: Optional[float] = Field()
     recommendationMean: Optional[float] = Field()
-    recommendationKey: str = Field()
+    recommendationKey: Optional[str] = Field()
     numberOfAnalystOpinions: Optional[int] = Field()
     totalCash: Optional[int] = Field()
     totalCashPerShare: Optional[float] = Field()
@@ -136,7 +136,7 @@ class Ticker(Node):
     grossMargins: Optional[float] = Field()
     ebitdaMargins: Optional[float] = Field()
     operatingMargins: Optional[float] = Field()
-    financialCurrency: str = Field()
+    financialCurrency: Optional[str] = Field()
     trailingPegRatio: Optional[float] = Field()
     insiderPurchases: Optional[int] = Field()
     insiderSales: Optional[int] = Field()
@@ -155,19 +155,13 @@ class InsiderHolder(Node):
     __label__ = "InsiderHolder"
     name: str = Field(index=True, exists=True, unique=True, db=memgraph)
     position: Optional[str] = Field()
-    mostRecentTransaction: Optional[str] = Field()
-    latestTransactionDate: Optional[str] = Field()
-    sharesOwnedDirectly: Optional[str] = Field()
-    positionDirectDate: Optional[str] = Field()
-    sharesOwnedIndirectly: Optional[str] = Field()
-    positionIndirectDate: Optional[str] = Field()
 
 
 class InsiderTransaction(Node):
     __label__ = "InsiderTransaction"
     shares: int = Field()
-    value: float = Field()
-    text: Optional[str] = Field()
+    value: Optional[str] = Field()
+    transaction_text: Optional[str] = Field()
     position: Optional[str] = Field()
     transaction: Optional[str] = Field()
     startDate: Optional[str] = Field()
@@ -184,41 +178,48 @@ class MutualFund(Node):
     name: str = Field(index=True, exists=True, unique=True, db=memgraph)
 
 
-class Has_Insider(Relationship):
-    __label__ = "Has_Insider"
+class Holds_IHT(Relationship):
+    __label__ = "HOLDS_IHT"
     __src__ = Ticker
     __dst__ = InsiderHolder
 
+    mostRecentTransaction: Optional[str] = Field()
+    latestTransactionDate: Optional[str] = Field()
+    sharesOwnedDirectly: Optional[str] = Field()
+    positionDirectDate: Optional[str] = Field()
+    sharesOwnedIndirectly: Optional[str] = Field()
+    positionIndirectDate: Optional[str] = Field()
+
 
 class Created(Relationship):
-    __label__ = "Created"
+    __label__ = "CREATED"
     __src__ = InsiderHolder
     __dst__ = InsiderTransaction
 
 
 class Purchased(Relationship):
-    __label__ = "Purchased"
+    __label__ = "PURCHASED"
     __src__ = InsiderTransaction
     __dst__ = Ticker
 
 
 class Holds_IT(Relationship):
-    __label__ = "Holds_IT"
+    __label__ = "HOLDS_IT"
     __src__ = Institution
     __dst__ = Ticker
 
-    shares: int = Field()
-    dateReported: str = Field()
-    pctHeld: float = Field()
-    value: int = Field()
+    shares: Optional[int] = Field()
+    dateReported: Optional[str] = Field()
+    pctHeld: Optional[float] = Field()
+    value: Optional[int] = Field()
 
 
 class Holds_MT(Relationship):
-    __label__ = "Holds_MT"
+    __label__ = "HOLDS_MT"
     __src__ = MutualFund
     __dst__ = Ticker
 
-    shares: int = Field()
-    dateReported: str = Field()
-    pctHeld: float = Field()
-    value: int = Field()
+    shares: Optional[int] = Field()
+    dateReported: Optional[str] = Field()
+    pctHeld: Optional[float] = Field()
+    value: Optional[int] = Field()
