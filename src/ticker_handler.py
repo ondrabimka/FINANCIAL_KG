@@ -53,10 +53,14 @@ class TickerHandler(yf.Ticker):
             The concatenated DataFrame containing the ticker information.
         """
         info = self.ticker.info
+        info.pop("companyOfficers")
         # TODO: Include company officers. Map them maybe?
         # officers = info.pop('companyOfficers')
         # officers = pd.DataFrame(officers)
-        return pd.concat([pd.DataFrame([info]), self.prepare_insider_purchases(), self.prepare_major_holders()], axis=1)
+        # replace nan with empty string
+        info = pd.DataFrame([info])
+        info.fillna("", inplace=True)
+        return pd.concat([info, self.prepare_insider_purchases(), self.prepare_major_holders()], axis=1)
 
     def prepare_major_holders(self) -> pd.DataFrame:
         """
@@ -70,6 +74,7 @@ class TickerHandler(yf.Ticker):
         major_holders = self.ticker.major_holders
         major_holders = major_holders.T
         major_holders = major_holders.reset_index(drop=True)
+        major_holders = major_holders.fillna("", inplace=True)
         return major_holders
 
     def prepare_insider_purchases(self) -> pd.DataFrame:
@@ -87,6 +92,7 @@ class TickerHandler(yf.Ticker):
         insider_purchases = insider_purchases[1:]
         insider_purchases.columns = [f"Insider {col}" for col in insider_purchases.columns]
         insider_purchases = insider_purchases.reset_index(drop=True)
+        insider_purchases = insider_purchases.fillna("", inplace=True)
         return insider_purchases
 
     def prepare_institutional_holders(self) -> pd.DataFrame:
@@ -99,7 +105,7 @@ class TickerHandler(yf.Ticker):
             The institutional holders information.
         """
         institutional_holders = self.ticker.institutional_holders
-        institutional_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value", "ticker"]
+        institutional_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value"]
         return institutional_holders
 
     def prepare_mutualfund_holders(self) -> pd.DataFrame:
@@ -112,7 +118,7 @@ class TickerHandler(yf.Ticker):
             The mutual fund holders information.
         """
         mutualfund_holders = self.ticker.mutualfund_holders
-        mutualfund_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value", "ticker"]
+        mutualfund_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value"]
         return mutualfund_holders
 
     def prepare_insider_transactions(self) -> pd.DataFrame:
@@ -125,7 +131,7 @@ class TickerHandler(yf.Ticker):
             The insider transactions information.
         """
         insider_transactions = self.ticker.insider_transactions
-        insider_transactions.columns = ["shares", "value", "text", "position", "transaction", "startDate", "ownership"]
+        insider_transactions.columns = ["shares", "value", "url", "transaction_text", "name", "position", "transaction", "startDate", "ownership"]
         return insider_transactions
 
     def prepare_insider_roster_holders(self) -> pd.DataFrame:

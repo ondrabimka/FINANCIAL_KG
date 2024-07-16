@@ -1,10 +1,11 @@
-# %% https://memgraph.com/blog/jupyter-translate-data-to-graph-database
 import asyncio
 
 import pandas as pd
 
 from ticker_handler import TickerHandler
-from utils import DATA_DIR
+from utils import DATA_DIR, setup_custom_logger
+
+logger = setup_custom_logger(__name__)
 
 
 class AsyncDataDownloader:
@@ -38,6 +39,21 @@ class AsyncDataDownloader:
         self.tickers = tickers
 
     async def get_data(self, ticker):
+        """
+        Gets the data for the given ticker.
+
+        Parameters
+        ----------
+        ticker : str
+            The ticker to get data for.
+
+        Returns
+        -------
+        tuple
+            A tuple containing the dataframes for ticker info, insider holder, mutual fund, institution, and insider transaction.
+        """
+
+        logger.info(f"Getting data for ticker {ticker}")
         ticker_handler = TickerHandler(ticker)
         ticker_info = ticker_handler.prepare_ticker_info()
         insider_holder = ticker_handler.prepare_insider_roster_holders()
@@ -61,8 +77,15 @@ class AsyncDataDownloader:
         current_date = pd.Timestamp.now().strftime("%Y-%m-%d")
         file_path = DATA_DIR / f"data_{current_date}" / file_name
         data.to_csv(file_path, index=False)
+        logger.info(f"Saved data to {file_path}")
 
     async def download_all_data(self):
+
+        """
+        Downloads all data for the tickers.
+        """
+
+        logger.info("Downloading all data for the tickers")
         tasks = []
         for ticker in self.tickers:
             tasks.append(self.get_data(ticker))
@@ -83,6 +106,19 @@ class AsyncDataDownloader:
         await self.save_data(all_insider_trade, "insider_transaction.csv")
 
     async def download_data_by_chunks(self, chunk_size=10, sleep_time=5):
+
+        """
+        Downloads data for the tickers by chunks.
+
+        Parameters
+        ----------
+        chunk_size : int
+            The size of each chunk.
+        sleep_time : int
+            The time to sleep between each chunk.
+        """
+
+        logger.info(f"Downloading data for the tickers by chunks with chunk size {chunk_size} and sleep time {sleep_time}")
         chunks = [self.tickers[i : i + chunk_size] for i in range(0, len(self.tickers), chunk_size)]
 
         all_data = []

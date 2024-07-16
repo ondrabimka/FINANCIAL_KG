@@ -1,32 +1,51 @@
-import logging
-
 import numpy as np
 import pandas as pd
 from gqlalchemy import Memgraph
 
 from src.db.models import Created, Holds_IHT, Holds_IT, Holds_MT, InsiderHolder, InsiderTransaction, Institution, MutualFund, Purchased, Ticker
+from src.utils import DATA_DIR, setup_custom_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_custom_logger(__name__)
 
 
 class DataUploader:
-    def __init__(self):
+
+    """
+    A class that uploads data to the database. Based on: https://memgraph.com/blog/jupyter-translate-data-to-graph-database
+
+    Parameters
+    ----------
+    data_path : str
+        The path to the data directory.
+
+    Attributes
+    ----------
+    file_path : Path
+        The path to the data file.
+    memgraph : Memgraph
+        The Memgraph object.
+    """
+
+    def __init__(self, data_path=pd.Timestamp.now().strftime("%Y-%m-%d")):
+        self.file_path = DATA_DIR / f"data_{data_path}"
         self.memgraph = Memgraph()
 
     def delete_all_data(self):
+        logger.info("Deleting all data from the database")
         self.memgraph.execute("MATCH (n) DETACH DELETE n")
 
     def upload_ticker_data(self):
-        data = pd.read_csv("data/ticker_info.csv").replace({np.nan: None})
+        data = pd.read_csv(self.file_path / "ticker.csv").replace({np.nan: None})
         for _, row in data.iterrows():
             try:
                 ticker = Ticker(**row.to_dict())
                 ticker.save(self.memgraph)
             except Exception as e:
                 logger.error(f"Error uploading ticker {row['ticker']}: {e}")
+        logger.info("Uploaded ticker data")
 
     def upload_insider_holder_data(self):
-        data = pd.read_csv("data/insider_holder.csv")
+        data = pd.read_csv(self.file_path / "insider_holder.csv")
         for _, row in data.iterrows():
             try:
                 insider_holder = InsiderHolder(**row.to_dict())
@@ -40,9 +59,10 @@ class DataUploader:
                 relationship.save(self.memgraph)
             except Exception as e:
                 logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
+        logger.info("Uploaded insider holder data")
 
     def upload_insider_transaction_data(self):
-        data = pd.read_csv("data/insider_transaction.csv")
+        data = pd.read_csv(self.file_path / "insider_transaction.csv")
         for _, row in data.iterrows():
             try:
                 insider = InsiderHolder(**row.to_dict())
@@ -69,8 +89,10 @@ class DataUploader:
             except Exception as e:
                 logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
 
+        logger.info("Uploaded insider transaction data")
+
     def upload_institution_data(self):
-        data = pd.read_csv("data/institution.csv")
+        data = pd.read_csv(self.file_path / "institution.csv")
         for _, row in data.iterrows():
             try:
                 institution = Institution(**row.to_dict())
@@ -85,8 +107,10 @@ class DataUploader:
             except Exception as e:
                 logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
 
+        logger.info("Uploaded institution data")
+
     def upload_mutual_fund_data(self):
-        data = pd.read_csv("data/mutual_fund.csv")
+        data = pd.read_csv(self.file_path / "mutual_fund.csv")
         for _, row in data.iterrows():
             try:
                 mutual_fund = MutualFund(**row.to_dict())
@@ -101,20 +125,26 @@ class DataUploader:
             except Exception as e:
                 logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
 
+        logger.info("Uploaded mutual fund data")
+
     def reupload_all_data(self):
+        logger.info("Reuploading all data")
         self.delete_all_data()
         self.upload_ticker_data()
         self.upload_insider_holder_data()
         self.upload_insider_transaction_data()
         self.upload_institution_data()
         self.upload_mutual_fund_data()
+        logger.info("Finished reuploading all data")
 
     def upload_all_data(self):
+        logger.info("Uploading all data")
         self.upload_ticker_data()
         self.upload_insider_holder_data()
         self.upload_insider_transaction_data()
         self.upload_institution_data()
         self.upload_mutual_fund_data()
+        logger.info("Finished uploading all data")
 
 
 if __name__ == "__main__":
