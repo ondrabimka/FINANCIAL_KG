@@ -1,0 +1,175 @@
+{
+  "style": {
+    "font-family": "Nunito Sans",
+    "background-color": "#F2F2F2",
+    "background-image": "",
+    "background-size": "100%",
+    "node-color": "#4C8EDA",
+    "border-width": 0,
+    "border-color": "#000000",
+    "radius": 75,
+    "node-padding": 5,
+    "node-margin": 2,
+    "outside-position": "auto",
+    "node-icon-image": "",
+    "node-background-image": "",
+    "icon-position": "inside",
+    "icon-size": 64,
+    "caption-position": "inside",
+    "caption-max-width": 200,
+    "caption-color": "#ffffff",
+    "caption-font-size": 20,
+    "caption-font-weight": "normal",
+    "label-position": "inside",
+    "label-display": "bare",
+    "label-color": "#ffffff",
+    "label-background-color": "#848484",
+    "label-border-color": "#848484",
+    "label-border-width": 3,
+    "label-font-size": 20,
+    "label-padding": 5,
+    "label-margin": 4,
+    "directionality": "directed",
+    "detail-position": "above",
+    "detail-orientation": "parallel",
+    "arrow-width": 3,
+    "arrow-color": "#848484",
+    "margin-start": 5,
+    "margin-end": 5,
+    "margin-peer": 20,
+    "attachment-start": "normal",
+    "attachment-end": "normal",
+    "relationship-icon-image": "",
+    "type-color": "#848484",
+    "type-background-color": "#F2F2F2",
+    "type-border-color": "#848484",
+    "type-border-width": 0,
+    "type-font-size": 21,
+    "type-padding": 5,
+    "property-position": "outside",
+    "property-alignment": "colon",
+    "property-color": "#848484",
+    "property-font-size": 20,
+    "property-font-weight": "normal"
+  },
+  "nodes": [
+    {
+      "id": "n0",
+      "position": {
+        "x": 96.1217659730888,
+        "y": 253
+      },
+      "caption": "",
+      "style": {
+        "radius": 100,
+        "node-color": "#4c0cda",
+        "label-font-size": 25
+      },
+      "labels": [
+        "InsiderHolder"
+      ],
+      "properties": {}
+    },
+    {
+      "id": "n1",
+      "position": {
+        "x": 309.81088298654424,
+        "y": 623.1204076918361
+      },
+      "caption": "InsiderTransaction",
+      "style": {
+        "radius": 100,
+        "node-color": "#fb9e00",
+        "caption-font-size": 25
+      },
+      "labels": [],
+      "properties": {}
+    },
+    {
+      "id": "n2",
+      "position": {
+        "x": 523.5,
+        "y": 253
+      },
+      "caption": "Ticker",
+      "style": {
+        "radius": 100,
+        "caption-font-size": 25
+      },
+      "labels": [],
+      "properties": {}
+    },
+    {
+      "id": "n3",
+      "position": {
+        "x": 309.81088298654424,
+        "y": -117.12040769183625
+      },
+      "caption": "Institution",
+      "style": {
+        "radius": 100,
+        "caption-font-size": 25,
+        "node-color": "#68bc00"
+      },
+      "labels": [],
+      "properties": {}
+    },
+    {
+      "id": "n4",
+      "position": {
+        "x": 737.1891170134556,
+        "y": -117.12040769183625
+      },
+      "caption": "MutualFund",
+      "style": {
+        "radius": 100,
+        "node-color": "#d33115",
+        "caption-font-size": 25
+      },
+      "labels": [],
+      "properties": {}
+    }
+  ],
+  "relationships": [
+    {
+      "id": "n0",
+      "type": "CREATED",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n1"
+    },
+    {
+      "id": "n1",
+      "type": "HOLDS_IHT",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n2"
+    },
+    {
+      "id": "n2",
+      "type": "HOLDS_IT",
+      "style": {},
+      "properties": {},
+      "fromId": "n3",
+      "toId": "n2"
+    },
+    {
+      "id": "n3",
+      "type": "HOLDS_MT",
+      "style": {},
+      "properties": {},
+      "fromId": "n4",
+      "toId": "n2"
+    },
+    {
+      "id": "n4",
+      "type": "PURCHASED",
+      "style": {},
+      "properties": {},
+      "fromId": "n1",
+      "toId": "n2"
+    }
+  ]
+}
