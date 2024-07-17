@@ -2,9 +2,9 @@ import os
 
 from dotenv import load_dotenv
 
-from src.db.upload import DataUploader
-from src.download import AsyncDataDownloader
-from src.utils import setup_custom_logger
+from db.upload import DataUploader
+from download import AsyncDataDownloader
+from utils import setup_custom_logger
 
 logger = setup_custom_logger(__name__)
 
@@ -20,6 +20,6 @@ downloader.download_data_by_chunks()
 logger.info("All data downloaded")
 logger.info("Uploading data to the database")
 uploader = DataUploader()
-uploader.upload_all_data()
+uploader.reupload_all_data()
 logger.info("All data uploaded")
 logger.info("Program finished")

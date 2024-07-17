@@ -76,6 +76,8 @@ class AsyncDataDownloader:
         """
         current_date = pd.Timestamp.now().strftime("%Y-%m-%d")
         file_path = DATA_DIR / f"data_{current_date}" / file_name
+        if not file_path.parent.exists():
+            file_path.parent.mkdir(parents=True)
         data.to_csv(file_path, index=False)
         logger.info(f"Saved data to {file_path}")
 

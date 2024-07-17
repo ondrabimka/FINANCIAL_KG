@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from gqlalchemy import Memgraph
 
-from src.db.models import Created, Holds_IHT, Holds_IT, Holds_MT, InsiderHolder, InsiderTransaction, Institution, MutualFund, Purchased, Ticker
-from src.utils import DATA_DIR, setup_custom_logger
+from db.models import Created, Holds_IHT, Holds_IT, Holds_MT, InsiderHolder, InsiderTransaction, Institution, MutualFund, Purchased, Ticker
+from utils import DATA_DIR, setup_custom_logger
 
 logger = setup_custom_logger(__name__)
 
@@ -28,6 +28,9 @@ class DataUploader:
 
     def __init__(self, data_path=pd.Timestamp.now().strftime("%Y-%m-%d")):
         self.file_path = DATA_DIR / f"data_{data_path}"
+        if not self.file_path.exists():
+            logger.error(f"Data directory {self.file_path} does not exist")
+            raise FileNotFoundError(f"Data directory {self.file_path} does not exist")
         self.memgraph = Memgraph()
 
     def delete_all_data(self):
@@ -35,7 +38,7 @@ class DataUploader:
         self.memgraph.execute("MATCH (n) DETACH DELETE n")
 
     def upload_ticker_data(self):
-        data = pd.read_csv(self.file_path / "ticker.csv").replace({np.nan: None})
+        data = pd.read_csv(self.file_path / "ticker_info.csv").replace({np.nan: None})
         for _, row in data.iterrows():
             try:
                 ticker = Ticker(**row.to_dict())
