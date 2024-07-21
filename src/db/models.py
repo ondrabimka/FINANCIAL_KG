@@ -1,8 +1,12 @@
+import os
 from typing import Optional
 
+from dotenv import load_dotenv
 from gqlalchemy import Field, Memgraph, Node, Relationship
 
-memgraph = Memgraph()
+load_dotenv()
+
+memgraph = Memgraph(os.getenv("QUICK_CONNECT_MG_HOST"), int(os.getenv("QUICK_CONNECT_MG_PORT")))
 
 
 class Ticker(Node):

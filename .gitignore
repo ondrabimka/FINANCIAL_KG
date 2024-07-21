@@ -83,3 +83,7 @@ data/
 
 # MacOs
 .DS_Store
+
+# ingore logs
+logs/
+.log

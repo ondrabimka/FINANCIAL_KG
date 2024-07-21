@@ -17,3 +17,14 @@ services:
     environment:
       - QUICK_CONNECT_MG_HOST=memgraph
       - QUICK_CONNECT_MG_PORT=7687
+
+  # comment out the following block if you don't want to run the Python script via Docker
+  python:
+    build:
+      context: .
+      dockerfile: src/Dockerfile
+    container_name: memgraph-python
+    depends_on:
+      - memgraph
+    volumes:
+      - ./data:/app/data

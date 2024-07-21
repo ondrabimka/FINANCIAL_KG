@@ -1,14 +1,10 @@
 import os
 
-from dotenv import load_dotenv
-
 from db.upload import DataUploader
 from download import AsyncDataDownloader
 from utils import setup_custom_logger
 
 logger = setup_custom_logger(__name__)
-
-load_dotenv()
 
 logger.info("Program started")
 logger.info("----------------")

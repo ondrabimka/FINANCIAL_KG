@@ -1,11 +1,16 @@
+import os
+
 import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
 from gqlalchemy import Memgraph
 
 from db.models import Created, Holds_IHT, Holds_IT, Holds_MT, InsiderHolder, InsiderTransaction, Institution, MutualFund, Purchased, Ticker
 from utils import DATA_DIR, setup_custom_logger
 
 logger = setup_custom_logger(__name__)
+
+load_dotenv()
 
 
 class DataUploader:
@@ -31,7 +36,7 @@ class DataUploader:
         if not self.file_path.exists():
             logger.error(f"Data directory {self.file_path} does not exist")
             raise FileNotFoundError(f"Data directory {self.file_path} does not exist")
-        self.memgraph = Memgraph()
+        self.memgraph = Memgraph(os.getenv("QUICK_CONNECT_MG_HOST"), int(os.getenv("QUICK_CONNECT_MG_PORT")))
 
     def delete_all_data(self):
         logger.info("Deleting all data from the database")
