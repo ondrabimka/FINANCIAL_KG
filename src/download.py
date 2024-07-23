@@ -156,6 +156,6 @@ class AsyncDataDownloader:
 
 
 # %%
-tickers = ["MSFT", "AAPL", "GOOGL"]
-downloader = AsyncDataDownloader(tickers)
-asyncio.run(downloader.download_all_data())
+# tickers = ["MSFT", "AAPL", "GOOGL"]
+# downloader = AsyncDataDownloader(tickers)
+# asyncio.run(downloader.download_all_data())

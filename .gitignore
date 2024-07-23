@@ -87,3 +87,4 @@ data/
 # ingore logs
 logs/
 .log
+logs.log
