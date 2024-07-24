@@ -38,6 +38,8 @@ QUICK_CONNECT_MG_PORT=7687     # docker deployment
 Data is fetched automatically from Yahoo Finance and translated into a graph database schema. The Knowledge Graph can be queried using the Memgraph Lab interface.
 1. Lab is available at `http://localhost:3000`
 
+![Screenshot](img/screenshot_memgraph.png)
+
 ## Dabase schema
 Database schema is defined in [Models](src/db/models.py)
 
