@@ -41,7 +41,7 @@ RUN crontab /etc/cron.d/mycron
 RUN chmod 0644 /etc/cron.d/mycron
 
 # Create the log file to be able to run tail
-RUN touch /var/log/cron.log
+RUN touch /var/log/cron.log+++++
 
 # Set the entrypoint script
 ENTRYPOINT ["src/entrypoint.sh"]

@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from db.upload import DataUploader
@@ -12,7 +13,7 @@ tickers = os.getenv("TICKERS").split(",")
 logger.info("Getting data for the following tickers:")
 logger.info(tickers)
 downloader = AsyncDataDownloader(tickers)
-downloader.download_data_by_chunks()
+asyncio.get_event_loop().run_until_complete(downloader.download_data_by_chunks())
 logger.info("All data downloaded")
 logger.info("Uploading data to the database")
 uploader = DataUploader()
