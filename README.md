@@ -47,6 +47,7 @@ Database schema is defined in [Models](src/db/models.py)
 
 ## TODO
 - Add news data
+- Explore Yfinance data in more detail
 
 ## Contributing
 Contributions are welcome! Please follow the code style and structure of the project (to some extent).
