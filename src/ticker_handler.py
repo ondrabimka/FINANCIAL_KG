@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pandas as pd
 import yfinance as yf
 
@@ -211,7 +213,25 @@ class TickerHandler(yf.Ticker):
         pd.DataFrame
             News the news information for a given ticker.
         """
-        pass
+
+        try:
+            news_list = list()
+
+            for news in self.ticker.news_data:
+                news_dict = dict()  # reset the dictionary for each iteration of the loop (each article)
+                news_dict["uuid"] = news["uuid"]
+                news_dict["title"] = news["title"]
+                news_dict["publisher"] = news["publisher"]
+                news_dict["link"] = news["link"]
+                news_dict["providerPublishTime"] = datetime.fromtimestamp(news["providerPublishTime"]).strftime("%Y-%m-%d %H:%M:%S")
+                news_list.append(news_dict)
+
+            news_df = pd.DataFrame(data=news_list, columns=["uuid", "title", "publisher", "link", "story", "providerPublishTime"])
+            return news_df
+
+        except Exception as E:
+            logger.error("No news found for: ", self.ticker, " with exception: ", E)
+            return pd.DataFrame([])
 
     @staticmethod
     def clean_name(name):
