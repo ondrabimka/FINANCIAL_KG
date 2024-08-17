@@ -202,6 +202,17 @@ class TickerHandler(yf.Ticker):
             logger.error("No insider_roster_holders found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
+    def prepare_news(self):
+        """
+        Preates the news information for a given ticker.
+
+        Returns
+        -------
+        pd.DataFrame
+            News the news information for a given ticker.
+        """
+        pass
+
     @staticmethod
     def clean_name(name):
         """

@@ -88,3 +88,6 @@ data/
 logs/
 .log
 logs.log
+
+# ignore playground
+playground.py
