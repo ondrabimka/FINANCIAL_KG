@@ -219,7 +219,7 @@ class TickerHandler(yf.Ticker):
         try:
             news_list = list()
 
-            for news in self.ticker.news_data:
+            for news in self.ticker.news:
                 news_dict = dict()  # reset the dictionary for each iteration of the loop (each article)
                 news_dict["uuid"] = news["uuid"]
                 news_dict["title"] = news["title"]
