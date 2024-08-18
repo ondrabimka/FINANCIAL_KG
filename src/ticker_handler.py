@@ -38,6 +38,8 @@ class TickerHandler(yf.Ticker):
         Prepares the insider transactions information.
     prepare_insider_roster_holders()
         Prepares the insider roster holders information.
+    prepare_news()
+        Prepares news data.
     clean_name(name)
         Cleans the given name by removing titles and degrees and converting it to uppercase.
     count_number_of_shared_letters_ratio(name1, name2)
