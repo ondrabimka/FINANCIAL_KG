@@ -192,6 +192,7 @@ class TickerHandler(yf.Ticker):
                 "ticker",
             ]
 
+            # Data formats can vary
             if (self.insider_roster_holders.shape[1]) == 9:
                 insider_roster_holders.columns = columns
                 return insider_roster_holders
@@ -228,7 +229,7 @@ class TickerHandler(yf.Ticker):
                 news_dict["providerPublishTime"] = datetime.fromtimestamp(news["providerPublishTime"]).strftime("%Y-%m-%d %H:%M:%S")
                 news_list.append(news_dict)
 
-            news_df = pd.DataFrame(data=news_list, columns=["uuid", "title", "publisher", "link", "story", "providerPublishTime"])
+            news_df = pd.DataFrame(data=news_list, columns=["uuid", "title", "publisher", "link", "providerPublishTime"])
             return news_df
 
         except Exception as E:
