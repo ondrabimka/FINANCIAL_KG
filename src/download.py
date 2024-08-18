@@ -127,7 +127,6 @@ class AsyncDataDownloader:
         logger.info(f"Downloading data for the tickers by chunks with chunk size {chunk_size} and sleep time {sleep_time}")
         chunks = [self.tickers[i : i + chunk_size] for i in range(0, len(self.tickers), chunk_size)]
 
-        all_data = []
         all_ticker_info = []
         all_insider_holder = []
         all_mutual_fund = []
@@ -141,14 +140,13 @@ class AsyncDataDownloader:
                 tasks.append(self.get_data(ticker))
 
             # concat all dataframes separately
-            data = await asyncio.gather(*tasks)
-            all_data.append(data)
-            all_ticker_info.append(pd.concat([data[0] for data in all_data]))
-            all_insider_holder.append(pd.concat([data[1] for data in all_data]))
-            all_mutual_fund.append(pd.concat([data[2] for data in all_data]))
-            all_institution.append(pd.concat([data[3] for data in all_data]))
-            all_insider_transaction.append(pd.concat([data[4] for data in all_data]))
-            all_news.append(pd.concat([data[5] for data in all_data]))
+            data_chunk = await asyncio.gather(*tasks)
+            all_ticker_info.append(pd.concat([data[0] for data in data_chunk]))
+            all_insider_holder.append(pd.concat([data[1] for data in data_chunk]))
+            all_mutual_fund.append(pd.concat([data[2] for data in data_chunk]))
+            all_institution.append(pd.concat([data[3] for data in data_chunk]))
+            all_insider_transaction.append(pd.concat([data[4] for data in data_chunk]))
+            all_news.append(pd.concat([data[5] for data in data_chunk]))
 
             # sleep for a while
             await asyncio.sleep(sleep_time)
