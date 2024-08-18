@@ -5,7 +5,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from gqlalchemy import Memgraph
 
-from db.models import Created, Holds_IHT, Holds_IT, Holds_MT, InsiderHolder, InsiderTransaction, Institution, MutualFund, Purchased, Ticker
+from db.models import About_NT, Created, Holds_IHT, Holds_IT, Holds_MT, InsiderHolder, InsiderTransaction, Institution, MutualFund, News, Purchased, Ticker
 from utils import DATA_DIR, setup_custom_logger
 
 logger = setup_custom_logger(__name__)
@@ -135,6 +135,22 @@ class DataUploader:
 
         logger.info("Uploaded mutual fund data")
 
+    def upload_news_data(self):
+        data = pd.read_csv(self.file_path / "news.csv")
+        for _, row in data.iterrows():
+            try:
+                news = News(**row.to_dict())
+                news.save(self.memgraph)
+            except Exception as e:
+                logger.error(f"Error creating news {row['ticker']}: {e}")
+
+            try:
+                ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
+                relationship = About_NT(_start_node_id=news._id, _end_node_id=ticker._id)
+                relationship.save(self.memgraph)
+            except Exception as e:
+                logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
+
     def reupload_all_data(self):
         logger.info("Reuploading all data")
         self.delete_all_data()
@@ -143,6 +159,7 @@ class DataUploader:
         self.upload_insider_transaction_data()
         self.upload_institution_data()
         self.upload_mutual_fund_data()
+        self.upload_news_data()
         logger.info("Finished reuploading all data")
 
     def upload_all_data(self):
@@ -152,6 +169,7 @@ class DataUploader:
         self.upload_insider_transaction_data()
         self.upload_institution_data()
         self.upload_mutual_fund_data()
+        self.upload_news_data()
         logger.info("Finished uploading all data")
 
 

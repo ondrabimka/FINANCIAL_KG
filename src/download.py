@@ -60,6 +60,7 @@ class AsyncDataDownloader:
         mutual_fund = ticker_handler.prepare_mutualfund_holders()
         institution = ticker_handler.prepare_institutional_holders()
         insider_transaction = ticker_handler.prepare_insider_transactions()
+        news = ticker_handler.prepare_news()
 
         # add ticker to the data
         ticker_info["ticker"] = ticker
@@ -67,8 +68,9 @@ class AsyncDataDownloader:
         mutual_fund["ticker"] = ticker
         institution["ticker"] = ticker
         insider_transaction["ticker"] = ticker
+        news["ticker"] = ticker
 
-        return ticker_info, insider_holder, mutual_fund, institution, insider_transaction
+        return ticker_info, insider_holder, mutual_fund, institution, insider_transaction, news
 
     async def save_data(self, data, file_name):
         """
@@ -99,6 +101,7 @@ class AsyncDataDownloader:
         all_mutual_fund = pd.concat([data[2] for data in all_data])
         all_institution = pd.concat([data[3] for data in all_data])
         all_insider_trade = pd.concat([data[4] for data in all_data])
+        all_news = pd.concat([data[5] for data in all_data])
 
         # save all dataframes
         await self.save_data(all_ticker_info, "ticker_info.csv")
@@ -106,6 +109,7 @@ class AsyncDataDownloader:
         await self.save_data(all_mutual_fund, "mutual_fund.csv")
         await self.save_data(all_institution, "institution.csv")
         await self.save_data(all_insider_trade, "insider_transaction.csv")
+        await self.save_data(all_news, "news.csv")
 
     async def download_data_by_chunks(self, chunk_size=10, sleep_time=5):
 
@@ -123,12 +127,12 @@ class AsyncDataDownloader:
         logger.info(f"Downloading data for the tickers by chunks with chunk size {chunk_size} and sleep time {sleep_time}")
         chunks = [self.tickers[i : i + chunk_size] for i in range(0, len(self.tickers), chunk_size)]
 
-        all_data = []
         all_ticker_info = []
         all_insider_holder = []
         all_mutual_fund = []
         all_institution = []
         all_insider_transaction = []
+        all_news = []
 
         for chunk in chunks:
             tasks = []
@@ -136,13 +140,13 @@ class AsyncDataDownloader:
                 tasks.append(self.get_data(ticker))
 
             # concat all dataframes separately
-            data = await asyncio.gather(*tasks)
-            all_data.append(data)
-            all_ticker_info.append(pd.concat([data[0] for data in data]))
-            all_insider_holder.append(pd.concat([data[1] for data in data]))
-            all_mutual_fund.append(pd.concat([data[2] for data in data]))
-            all_institution.append(pd.concat([data[3] for data in data]))
-            all_insider_transaction.append(pd.concat([data[4] for data in data]))
+            data_chunk = await asyncio.gather(*tasks)
+            all_ticker_info.append(pd.concat([data[0] for data in data_chunk]))
+            all_insider_holder.append(pd.concat([data[1] for data in data_chunk]))
+            all_mutual_fund.append(pd.concat([data[2] for data in data_chunk]))
+            all_institution.append(pd.concat([data[3] for data in data_chunk]))
+            all_insider_transaction.append(pd.concat([data[4] for data in data_chunk]))
+            all_news.append(pd.concat([data[5] for data in data_chunk]))
 
             # sleep for a while
             await asyncio.sleep(sleep_time)
@@ -153,6 +157,7 @@ class AsyncDataDownloader:
         await self.save_data(pd.concat(all_mutual_fund), "mutual_fund.csv")
         await self.save_data(pd.concat(all_institution), "institution.csv")
         await self.save_data(pd.concat(all_insider_transaction), "insider_transaction.csv")
+        await self.save_data(pd.concat(all_news), "news.csv")
 
 
 # %%

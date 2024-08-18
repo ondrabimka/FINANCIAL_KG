@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pandas as pd
 import yfinance as yf
 
@@ -36,6 +38,8 @@ class TickerHandler(yf.Ticker):
         Prepares the insider transactions information.
     prepare_insider_roster_holders()
         Prepares the insider roster holders information.
+    prepare_news()
+        Prepares news data.
     clean_name(name)
         Cleans the given name by removing titles and degrees and converting it to uppercase.
     count_number_of_shared_letters_ratio(name1, name2)
@@ -188,6 +192,7 @@ class TickerHandler(yf.Ticker):
                 "ticker",
             ]
 
+            # Data formats can vary
             if (self.insider_roster_holders.shape[1]) == 9:
                 insider_roster_holders.columns = columns
                 return insider_roster_holders
@@ -200,6 +205,35 @@ class TickerHandler(yf.Ticker):
 
         except Exception as E:
             logger.error("No insider_roster_holders found for: ", self.ticker, " with exception: ", E)
+            return pd.DataFrame([])
+
+    def prepare_news(self):
+        """
+        Preates the news information for a given ticker.
+
+        Returns
+        -------
+        pd.DataFrame
+            News the news information for a given ticker.
+        """
+
+        try:
+            news_list = list()
+
+            for news in self.ticker.news:
+                news_dict = dict()  # reset the dictionary for each iteration of the loop (each article)
+                news_dict["uuid"] = news["uuid"]
+                news_dict["title"] = news["title"]
+                news_dict["publisher"] = news["publisher"]
+                news_dict["link"] = news["link"]
+                news_dict["providerPublishTime"] = datetime.fromtimestamp(news["providerPublishTime"]).strftime("%Y-%m-%d %H:%M:%S")
+                news_list.append(news_dict)
+
+            news_df = pd.DataFrame(data=news_list, columns=["uuid", "title", "publisher", "link", "providerPublishTime"])
+            return news_df
+
+        except Exception as E:
+            logger.error("No news found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
     @staticmethod

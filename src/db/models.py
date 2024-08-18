@@ -182,6 +182,21 @@ class MutualFund(Node):
     name: str = Field(index=True, exists=True, unique=True, db=memgraph)
 
 
+class News(Node):
+    __label__ = "News"
+    uuid: str = Field(index=True, exists=True, unique=True, db=memgraph)
+    title: Optional[str] = Field()
+    publisher: Optional[str] = Field()
+    link: Optional[str] = Field()
+    providerPublishTime: Optional[str] = Field()
+
+
+class About_NT(Relationship):
+    __label__ = "ABOUT_NT"
+    __src__ = News
+    __dst__ = Ticker
+
+
 class Holds_IHT(Relationship):
     __label__ = "HOLDS_IHT"
     __src__ = Ticker
