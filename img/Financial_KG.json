@@ -1,13 +1,13 @@
 {
   "style": {
-    "font-family": "Nunito Sans",
-    "background-color": "#F2F2F2",
+    "font-family": "sans-serif",
+    "background-color": "#ffffff",
     "background-image": "",
     "background-size": "100%",
-    "node-color": "#4C8EDA",
-    "border-width": 0,
+    "node-color": "#ffffff",
+    "border-width": 4,
     "border-color": "#000000",
-    "radius": 75,
+    "radius": 50,
     "node-padding": 5,
     "node-margin": 2,
     "outside-position": "auto",
@@ -17,114 +17,138 @@
     "icon-size": 64,
     "caption-position": "inside",
     "caption-max-width": 200,
-    "caption-color": "#ffffff",
-    "caption-font-size": 20,
+    "caption-color": "#000000",
+    "caption-font-size": 50,
     "caption-font-weight": "normal",
     "label-position": "inside",
-    "label-display": "bare",
-    "label-color": "#ffffff",
-    "label-background-color": "#848484",
-    "label-border-color": "#848484",
-    "label-border-width": 3,
-    "label-font-size": 20,
+    "label-display": "pill",
+    "label-color": "#000000",
+    "label-background-color": "#ffffff",
+    "label-border-color": "#000000",
+    "label-border-width": 4,
+    "label-font-size": 40,
     "label-padding": 5,
     "label-margin": 4,
     "directionality": "directed",
-    "detail-position": "above",
+    "detail-position": "inline",
     "detail-orientation": "parallel",
-    "arrow-width": 3,
-    "arrow-color": "#848484",
+    "arrow-width": 5,
+    "arrow-color": "#000000",
     "margin-start": 5,
     "margin-end": 5,
     "margin-peer": 20,
     "attachment-start": "normal",
     "attachment-end": "normal",
     "relationship-icon-image": "",
-    "type-color": "#848484",
-    "type-background-color": "#F2F2F2",
-    "type-border-color": "#848484",
+    "type-color": "#000000",
+    "type-background-color": "#ffffff",
+    "type-border-color": "#000000",
     "type-border-width": 0,
-    "type-font-size": 21,
+    "type-font-size": 16,
     "type-padding": 5,
     "property-position": "outside",
     "property-alignment": "colon",
-    "property-color": "#848484",
-    "property-font-size": 20,
+    "property-color": "#000000",
+    "property-font-size": 16,
     "property-font-weight": "normal"
   },
   "nodes": [
     {
-      "id": "n0",
+      "id": "n1",
       "position": {
-        "x": 177.1990004571235,
-        "y": 25.011023929523276
+        "x": 129.55452677373708,
+        "y": -4
       },
       "caption": "",
-      "style": {
-        "radius": 100,
-        "node-color": "#4c0cda",
-        "label-font-size": 25
-      },
       "labels": [
         "InsiderHolder"
       ],
-      "properties": {}
-    },
-    {
-      "id": "n1",
-      "position": {
-        "x": 176.64447368338642,
-        "y": 438.91097492483595
-      },
-      "caption": "InsiderTransaction",
+      "properties": {},
       "style": {
         "radius": 100,
-        "node-color": "#fb9e00",
-        "caption-font-size": 25
-      },
-      "labels": [],
-      "properties": {}
+        "node-color": "#ab149e",
+        "label-font-size": 40,
+        "label-background-color": "#7b64ff",
+        "label-display": "bare",
+        "label-color": "#ffffff"
+      }
     },
     {
       "id": "n2",
       "position": {
-        "x": 523.5,
-        "y": 253
+        "x": 129,
+        "y": 409.8999509953127
       },
-      "caption": "Ticker",
+      "caption": "InsiderTransaction",
+      "labels": [],
+      "properties": {},
       "style": {
         "radius": 100,
-        "caption-font-size": 25
-      },
-      "labels": [],
-      "properties": {}
+        "node-color": "#fb9e00",
+        "caption-font-size": 40,
+        "caption-color": "#ffffff"
+      }
     },
     {
       "id": "n3",
       "position": {
-        "x": 847.8021528733613,
-        "y": 25.011023929523326
+        "x": 475.8555263166136,
+        "y": 223.98897607047672
       },
-      "caption": "Institution",
+      "caption": "Ticker",
+      "labels": [],
+      "properties": {},
       "style": {
         "radius": 100,
-        "caption-font-size": 25,
-        "node-color": "#68bc00"
-      },
-      "labels": [],
-      "properties": {}
+        "caption-font-size": 40,
+        "caption-color": "#ffffff",
+        "node-color": "#7b64ff"
+      }
     },
     {
       "id": "n4",
       "position": {
-        "x": 845.5072542544796,
-        "y": 438.91097492483595
+        "x": 804.5538779252344,
+        "y": 440.3891617997255
+      },
+      "caption": "Institution",
+      "labels": [],
+      "properties": {},
+      "style": {
+        "radius": 100,
+        "caption-font-size": 40,
+        "node-color": "#e27300",
+        "caption-color": "#ffffff"
+      }
+    },
+    {
+      "id": "n5",
+      "position": {
+        "x": 475.8555263166136,
+        "y": 585.6574512189642
       },
       "caption": "MutualFund",
+      "labels": [],
+      "properties": {},
       "style": {
         "radius": 100,
         "node-color": "#d33115",
-        "caption-font-size": 25
+        "caption-font-size": 40,
+        "caption-color": "#ffffff"
+      }
+    },
+    {
+      "id": "n6",
+      "position": {
+        "x": 716.7049716827644,
+        "y": -45.81767800434329
+      },
+      "caption": "News",
+      "style": {
+        "radius": 100,
+        "caption-font-size": 40,
+        "node-color": "#009ce0",
+        "caption-color": "#ffffff"
       },
       "labels": [],
       "properties": {}
@@ -133,43 +157,63 @@
   "relationships": [
     {
       "id": "n0",
+      "fromId": "n1",
+      "toId": "n2",
       "type": "CREATED",
-      "style": {},
       "properties": {},
-      "fromId": "n0",
-      "toId": "n1"
+      "style": {
+        "type-font-size": 19
+      }
     },
     {
       "id": "n1",
+      "fromId": "n1",
+      "toId": "n3",
       "type": "HOLDS_IHT",
-      "style": {},
       "properties": {},
-      "fromId": "n0",
-      "toId": "n2"
+      "style": {
+        "type-font-size": 19
+      }
     },
     {
       "id": "n2",
+      "fromId": "n4",
+      "toId": "n3",
       "type": "HOLDS_IT",
-      "style": {},
       "properties": {},
-      "fromId": "n3",
-      "toId": "n2"
+      "style": {
+        "type-font-size": 19
+      }
     },
     {
       "id": "n3",
+      "fromId": "n5",
+      "toId": "n3",
       "type": "HOLDS_MT",
-      "style": {},
       "properties": {},
-      "fromId": "n4",
-      "toId": "n2"
+      "style": {
+        "type-font-size": 19
+      }
     },
     {
       "id": "n4",
+      "fromId": "n2",
+      "toId": "n3",
       "type": "PURCHASED",
-      "style": {},
       "properties": {},
-      "fromId": "n1",
-      "toId": "n2"
+      "style": {
+        "type-font-size": 19
+      }
+    },
+    {
+      "id": "n5",
+      "type": "ABOUT_NT",
+      "style": {
+        "type-font-size": 19
+      },
+      "properties": {},
+      "fromId": "n6",
+      "toId": "n3"
     }
   ]
 }
