@@ -46,7 +46,6 @@ Database schema is defined in [Models](src/db/models.py)
 ![Financial_KG](img/Financial_KG.png)
 
 ## TODO
-- Add news data
 - Explore Yfinance data in more detail
 
 ## Contributing
