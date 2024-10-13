@@ -111,7 +111,7 @@ class AsyncDataDownloader:
         await self.save_data(all_insider_trade, "insider_transaction.csv")
         await self.save_data(all_news, "news.csv")
 
-    async def download_data_by_chunks(self, chunk_size=10, sleep_time=5):
+    async def download_data_by_chunks(self, chunk_size=5, sleep_time=2):
 
         """
         Downloads data for the tickers by chunks.
