@@ -142,14 +142,14 @@ class DataUploader:
                 news = News(**row.to_dict())
                 news.save(self.memgraph)
             except Exception as e:
-                logger.error(f"Error creating news {row['ticker']}: {e}")
+                logger.error(f"Error creating news {row['title']}: {e}")
 
             try:
                 ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
                 relationship = About_NT(_start_node_id=news._id, _end_node_id=ticker._id)
                 relationship.save(self.memgraph)
             except Exception as e:
-                logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
+                logger.error(f"Error creating relationship between {row['title']} and {row['name']}: {e}")
 
     def reupload_all_data(self):
         logger.info("Reuploading all data")
