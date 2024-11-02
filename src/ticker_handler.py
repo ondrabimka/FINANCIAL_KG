@@ -236,6 +236,9 @@ class TickerHandler(yf.Ticker):
             logger.error("No news found for: ", self.ticker.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
+    def prepare_historical_data(self):
+        pass
+
     @staticmethod
     def clean_name(name):
         """
