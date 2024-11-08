@@ -47,8 +47,7 @@ class TickerHandler(yf.Ticker):
     """
 
     def __init__(self, ticker):
-        super(TickerHandler, self).__init__(ticker)
-        self.ticker = yf.Ticker(ticker)
+        super().__init__(ticker)
 
     def prepare_ticker_info(self):
         """
@@ -59,7 +58,7 @@ class TickerHandler(yf.Ticker):
         pd.DataFrame
             The concatenated DataFrame containing the ticker information.
         """
-        info = self.ticker.info
+        info = self.info
         try:
             info.pop("companyOfficers")
         except Exception as E:
@@ -82,13 +81,13 @@ class TickerHandler(yf.Ticker):
             The major holders information.
         """
         try:
-            major_holders = self.ticker.major_holders
+            major_holders = self.major_holders
             major_holders = major_holders.T
             major_holders = major_holders.reset_index(drop=True)
             major_holders = major_holders.infer_objects(copy=False).fillna("")
             return major_holders
         except Exception as E:
-            logger.error("No major_holders found for: ", self.ticker.ticker, " with exception: ", E)
+            logger.error("No major_holders found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
     def prepare_insider_purchases(self) -> pd.DataFrame:
@@ -102,7 +101,7 @@ class TickerHandler(yf.Ticker):
         """
 
         try:
-            insider_purchases = self.ticker.insider_purchases
+            insider_purchases = self.insider_purchases
             insider_purchases = insider_purchases[["Insider Purchases Last 6m", "Shares"]].T
             insider_purchases.columns = insider_purchases.iloc[0]
             insider_purchases = insider_purchases[1:]
@@ -111,7 +110,7 @@ class TickerHandler(yf.Ticker):
             insider_purchases = insider_purchases.infer_objects(copy=False).fillna("")
             return insider_purchases
         except Exception as E:
-            logger.error("No insider_transactions found for: ", self.ticker.ticker, " with exception: ", E)
+            logger.error("No insider_transactions found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
     def prepare_institutional_holders(self) -> pd.DataFrame:
@@ -125,11 +124,11 @@ class TickerHandler(yf.Ticker):
         """
 
         try:
-            institutional_holders = self.ticker.institutional_holders
+            institutional_holders = self.institutional_holders
             institutional_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value"]
             return institutional_holders
         except Exception as E:
-            logger.error("No institutional_holders found for: ", self.ticker.ticker, " with exception: ", E)
+            logger.error("No institutional_holders found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
     def prepare_mutualfund_holders(self) -> pd.DataFrame:
@@ -143,11 +142,11 @@ class TickerHandler(yf.Ticker):
         """
 
         try:
-            mutualfund_holders = self.ticker.mutualfund_holders
+            mutualfund_holders = self.mutualfund_holders
             mutualfund_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value"]
             return mutualfund_holders
         except Exception as E:
-            logger.error("No mutualfund_holders found for: ", self.ticker.ticker, " with exception: ", E)
+            logger.error("No mutualfund_holders found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
     def prepare_insider_transactions(self) -> pd.DataFrame:
@@ -160,11 +159,11 @@ class TickerHandler(yf.Ticker):
             The insider transactions information.
         """
         try:
-            insider_transactions = self.ticker.insider_transactions
+            insider_transactions = self.insider_transactions
             insider_transactions.columns = ["shares", "value", "url", "transaction_text", "name", "position", "transaction", "startDate", "ownership"]
             return insider_transactions
         except Exception as E:
-            logger.error("No insider_transactions found for: ", self.ticker.ticker, " with exception: ", E)
+            logger.error("No insider_transactions found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
     def prepare_insider_roster_holders(self) -> pd.DataFrame:
@@ -178,7 +177,7 @@ class TickerHandler(yf.Ticker):
         """
 
         try:
-            insider_roster_holders = self.ticker.insider_roster_holders
+            insider_roster_holders = self.insider_roster_holders
 
             columns = [
                 "name",
@@ -204,7 +203,7 @@ class TickerHandler(yf.Ticker):
                 return pd.DataFrame([])
 
         except Exception as E:
-            logger.error("No insider_roster_holders found for: ", self.ticker.ticker, " with exception: ", E)
+            logger.error("No insider_roster_holders found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
     def prepare_news(self):
@@ -220,7 +219,7 @@ class TickerHandler(yf.Ticker):
         try:
             news_list = list()
 
-            for news in self.ticker.news:
+            for news in self.news:
                 news_dict = dict()  # reset the dictionary for each iteration of the loop (each article)
                 news_dict["uuid"] = news["uuid"]
                 news_dict["title"] = news["title"]
@@ -233,7 +232,7 @@ class TickerHandler(yf.Ticker):
             return news_df
 
         except Exception as E:
-            logger.error("No news found for: ", self.ticker.ticker, " with exception: ", E)
+            logger.error("No news found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
     @staticmethod
