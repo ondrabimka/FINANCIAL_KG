@@ -179,17 +179,7 @@ class TickerHandler(yf.Ticker):
         try:
             insider_roster_holders = self.insider_roster_holders
 
-            columns = [
-                "name",
-                "position",
-                "mostRecentTransaction",
-                "latestTransactionDate",
-                "sharesOwnedDirectly",
-                "positionDirectDate",
-                "sharesOwnedIndirectly",
-                "positionIndirectDate",
-                "ticker",
-            ]
+            columns = ["name", "position", "URL", "mostRecentTransaction", "latestTransactionDate", "sharesOwnedDirectly", "positionDirectDate", "sharesOwnedIndirectly", "positionIndirectDate"]
 
             # Data formats can vary
             if (self.insider_roster_holders.shape[1]) == 9:
