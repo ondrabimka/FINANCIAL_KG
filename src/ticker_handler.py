@@ -179,17 +179,7 @@ class TickerHandler(yf.Ticker):
         try:
             insider_roster_holders = self.insider_roster_holders
 
-            columns = [
-                "name",
-                "position",
-                "mostRecentTransaction",
-                "latestTransactionDate",
-                "sharesOwnedDirectly",
-                "positionDirectDate",
-                "sharesOwnedIndirectly",
-                "positionIndirectDate",
-                "ticker",
-            ]
+            columns = ["name", "position", "URL", "mostRecentTransaction", "latestTransactionDate", "sharesOwnedDirectly", "positionDirectDate", "sharesOwnedIndirectly", "positionIndirectDate"]
 
             # Data formats can vary
             if (self.insider_roster_holders.shape[1]) == 9:
@@ -206,7 +196,6 @@ class TickerHandler(yf.Ticker):
             logger.error("No insider_roster_holders found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
-    # TODO: #2 Sometimes not all news get downloaded (only around 2,3k is)
     def prepare_news(self):
         """
         Preates the news information for a given ticker.
