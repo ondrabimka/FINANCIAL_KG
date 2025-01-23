@@ -5,7 +5,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from gqlalchemy import Memgraph
 
-from db.models import About_NT, Created, Holds_IHT, Holds_IT, Holds_MT, InsiderHolder, InsiderTransaction, Institution, MutualFund, News, Purchased, Ticker
+from db.models import About_NT, Created, Holds_IHT, Holds_IT, Holds_MT, InsiderHolder, InsiderTransaction, Institution, Involves, MutualFund, News, Ticker
 from utils import DATA_DIR, setup_custom_logger
 
 logger = setup_custom_logger(__name__)
@@ -92,7 +92,7 @@ class DataUploader:
 
             try:
                 ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
-                relationship = Purchased(_start_node_id=insider_transaction._id, _end_node_id=ticker._id)
+                relationship = Involves(_start_node_id=insider_transaction._id, _end_node_id=ticker._id)
                 relationship.save(self.memgraph)
             except Exception as e:
                 logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")

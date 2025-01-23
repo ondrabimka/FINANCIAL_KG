@@ -216,8 +216,8 @@ class Created(Relationship):
     __dst__ = InsiderTransaction
 
 
-class Purchased(Relationship):
-    __label__ = "PURCHASED"
+class Involves(Relationship):
+    __label__ = "INVOLVES"
     __src__ = InsiderTransaction
     __dst__ = Ticker
 
