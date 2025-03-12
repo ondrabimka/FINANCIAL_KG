@@ -1,4 +1,4 @@
 GQLAlchemy==1.6.0
-yfinance==0.2.40
+yfinance==0.2.54
 python-dotenv==1.0.1
 pandas==2.2.2

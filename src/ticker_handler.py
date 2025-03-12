@@ -225,6 +225,22 @@ class TickerHandler(yf.Ticker):
             logger.error("No news found for: ", self.ticker, " with exception: ", E)
             return pd.DataFrame([])
 
+    def is_valid_ticker(self) -> bool:
+        """
+        Checks if the ticker is valid.
+
+        Returns
+        -------
+        bool
+            True if the ticker is valid, False otherwise.
+        """
+        try:
+            self.info
+            return True
+        except Exception as E:
+            logger.error("Invalid ticker: ", self.ticker, " with exception: ", E)
+            return False
+
     @staticmethod
     def clean_name(name):
         """
