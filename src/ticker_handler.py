@@ -207,15 +207,19 @@ class TickerHandler(yf.Ticker):
         """
 
         try:
-            news_list = list()
+            news_list = []
+            fields = {"uuid": "id", "title": "title", "publisher": "publisher", "link": "link", "providerPublishTime": "providerPublishTime"}
 
             for news in self.news:
-                news_dict = dict()  # reset the dictionary for each iteration of the loop (each article)
-                news_dict["uuid"] = news["uuid"]
-                news_dict["title"] = news["title"]
-                news_dict["publisher"] = news["publisher"]
-                news_dict["link"] = news["link"]
-                news_dict["providerPublishTime"] = datetime.fromtimestamp(news["providerPublishTime"]).strftime("%Y-%m-%d %H:%M:%S")
+                news_dict = {}
+                for key, source_key in fields.items():
+                    try:
+                        value = news[source_key]
+                        if key == "providerPublishTime":
+                            value = datetime.fromtimestamp(value).strftime("%Y-%m-%d %H:%M:%S")
+                        news_dict[key] = value
+                    except KeyError:
+                        news_dict[key] = None
                 news_list.append(news_dict)
 
             news_df = pd.DataFrame(data=news_list, columns=["uuid", "title", "publisher", "link", "providerPublishTime"])
