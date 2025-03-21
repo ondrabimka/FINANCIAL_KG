@@ -125,7 +125,7 @@ class TickerHandler(yf.Ticker):
 
         try:
             institutional_holders = self.institutional_holders
-            institutional_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value"]
+            institutional_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value", "pctChange"]
             return institutional_holders
         except Exception as E:
             logger.error("No institutional_holders found for: ", self.ticker, " with exception: ", E)
@@ -143,7 +143,7 @@ class TickerHandler(yf.Ticker):
 
         try:
             mutualfund_holders = self.mutualfund_holders
-            mutualfund_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value"]
+            mutualfund_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value", "pctChange"]
             return mutualfund_holders
         except Exception as E:
             logger.error("No mutualfund_holders found for: ", self.ticker, " with exception: ", E)
