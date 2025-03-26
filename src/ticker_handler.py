@@ -207,22 +207,61 @@ class TickerHandler(yf.Ticker):
         """
 
         try:
-            news_list = []
-            fields = {"uuid": "id", "title": "title", "publisher": "publisher", "link": "link", "providerPublishTime": "providerPublishTime"}
+            parsed_news_list = []
+            fields = {
+                "uuid": "id",
+                "title": "content.title",
+                "publisher": "content.provider.displayName",
+                "link": "content.canonicalUrl.url",
+                "providerPublishTime": "content.pubDate",
+                "summary": "content.summary",
+                "description": "content.description",
+            }
+
+            def get_nested_value(data, key_path):
+                """
+                Retrieve a nested value from a dictionary using a dot-separated key path.
+
+                Args:
+                    data (dict): The dictionary to search
+                    key_path (str): Dot-separated path to the desired value
+
+                Returns:
+                    The value at the specified path, or None if not found
+                """
+                keys = key_path.split(".")
+                for key in keys:
+                    if isinstance(data, dict):
+                        data = data.get(key, {})
+                    else:
+                        return None
+                return data if data != {} else None
 
             for news in self.news:
                 news_dict = {}
                 for key, source_key in fields.items():
                     try:
-                        value = news[source_key]
-                        if key == "providerPublishTime":
-                            value = datetime.fromtimestamp(value).strftime("%Y-%m-%d %H:%M:%S")
-                        news_dict[key] = value
-                    except KeyError:
-                        news_dict[key] = None
-                news_list.append(news_dict)
+                        value = get_nested_value(news, source_key)
 
-            news_df = pd.DataFrame(data=news_list, columns=["uuid", "title", "publisher", "link", "providerPublishTime"])
+                        # Convert timestamp if it's a publish time
+                        if key == "providerPublishTime" and value:
+                            try:
+                                # Parse ISO 8601 format
+                                value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S")
+                            except Exception:
+                                value = None
+
+                        news_dict[key] = value
+                    except Exception:
+                        news_dict[key] = None
+
+                # Add additional useful fields
+                news_dict["content_type"] = get_nested_value(news, "content.contentType")
+                news_dict["canonical_url"] = get_nested_value(news, "content.canonicalUrl.url")
+
+                parsed_news_list.append(news_dict)
+
+            news_df = pd.DataFrame(data=parsed_news_list, columns=["uuid", "title", "publisher", "link", "providerPublishTime", "summary", "description"])
             return news_df
 
         except Exception as E:

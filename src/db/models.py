@@ -189,6 +189,8 @@ class News(Node):
     publisher: Optional[str] = Field()
     link: Optional[str] = Field()
     providerPublishTime: Optional[str] = Field()
+    summary: Optional[str] = Field()
+    description: Optional[str] = Field()
 
 
 class About_NT(Relationship):
