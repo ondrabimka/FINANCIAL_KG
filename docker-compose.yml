@@ -5,7 +5,8 @@ services:
     ports:
       - "7687:7687"
       - "7444:7444"
-    command: ["--log-level=TRACE"]
+    # --schema-info-enabled=True is required for the MCP server to run SHOW SCHEMA INFO
+    command: ["--log-level=TRACE", "--schema-info-enabled=True"]
 
   lab:
     image: memgraph/lab:latest
@@ -17,6 +18,20 @@ services:
     environment:
       - QUICK_CONNECT_MG_HOST=memgraph
       - QUICK_CONNECT_MG_PORT=7687
+
+  # Memgraph MCP server - exposes the graph database to AI agents via Model Context Protocol
+  # HTTP endpoint: http://localhost:8000/mcp/
+  mcp:
+    build:
+      context: .
+      dockerfile: mcp/Dockerfile
+    container_name: memgraph-mcp
+    ports:
+      - "8000:8000"
+    depends_on:
+      - memgraph
+    environment:
+      - MEMGRAPH_URL=bolt://memgraph:7687
 
   # comment out the following block if you don't want to run the Python script via Docker
   python:

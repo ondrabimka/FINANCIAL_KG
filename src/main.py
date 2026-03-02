@@ -1,15 +1,18 @@
 import asyncio
-import os
+
+import pandas as pd
 
 from db.upload import DataUploader
 from download import AsyncDataDownloader
-from utils import setup_custom_logger
+from utils import DATA_DIR, setup_custom_logger
 
 logger = setup_custom_logger(__name__)
 
 logger.info("Program started")
 logger.info("----------------")
-tickers = os.getenv("TICKERS").split(",")
+# tickers = os.getenv("TICKERS").split(",")
+tickers = pd.read_csv(DATA_DIR / "nasdaq_screener_1721725526813.csv").dropna()
+tickers = list(tickers["Symbol"])
 logger.info("Getting data for the following tickers:")
 logger.info(tickers)
 downloader = AsyncDataDownloader(tickers)
