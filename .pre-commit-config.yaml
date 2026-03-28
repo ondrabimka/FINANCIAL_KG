@@ -13,7 +13,7 @@ repos:
         args: ['--maxkb=50000']
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+    rev: 5.13.2
     hooks:
       - id: isort
         name: Format imports
