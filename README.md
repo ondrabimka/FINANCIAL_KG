@@ -4,10 +4,10 @@
 This project aims to create a comprehensive Financial Knowledge Graph. Currently, the Knowledge Graph contains information about companies, their stock prices, and financial metrics from Yahoo Finance, using the yfinance library. The data is translated into a graph database schema and stored in Memgraph.
 The Knowledge Graph provides a structured representation of financial data, allowing for efficient querying and analysis.
 
-Once the Docker container is running, the Knowledge Graph can be queried using the Memgraph Lab interface. The Lab provides a user-friendly environment for exploring the graph database and running queries.
+Once the Docker container is running, the Knowledge Graph can be queried using the Memgraph Lab interface or via the built-in MCP server by any AI agent (GitHub Copilot, Claude Desktop, etc.).
 
-The database will be fetched once the container is running and will be be updated every working day after the market closes.
-To modify the list of companies, edit the .env file in the root directory and to modify the update frequency, edit the [Dockerfile](src/Dockerfile) cron job.
+The database will be fetched once the container is running and will be updated every working day after the market closes.
+To modify the list of companies, edit the `.env` file in the root directory and to modify the update frequency, edit the [Dockerfile](src/Dockerfile) cron job.
 
 The data is being stored in data/ directory in the root directory of the project. The data is stored in CSV format and can be used for further analysis or visualization. Only the most recent data is stored in the memgraph database.
 
@@ -16,6 +16,7 @@ The data is being stored in data/ directory in the root directory of the project
 - Translates the fetched data into a graph database schema.
 - Stores the data in Memgraph, a high-performance graph database.
 - Provides query capabilities to explore and analyze the financial data.
+- Exposes a [Model Context Protocol (MCP)](https://memgraph.com/docs/ai-ecosystem/mcp) server so AI agents can query the graph using natural language.
 - Can be easily deployed using Docker.
 
 ## Prerequisites
@@ -40,7 +41,40 @@ Data is fetched automatically from Yahoo Finance and translated into a graph dat
 
 ![Screenshot](img/screenshot_memgraph.png)
 
-## Dabase schema
+## MCP Server
+The stack includes a [Memgraph MCP server](https://memgraph.com/docs/ai-ecosystem/mcp) that exposes the graph database to AI agents via the Model Context Protocol.
+
+| Endpoint | URL |
+|---|---|
+| HTTP (Streamable) | `http://localhost:8000/mcp/` |
+
+The MCP service is defined in [mcp/Dockerfile](mcp/Dockerfile) and starts automatically with `docker-compose up`.
+
+### GitHub Copilot (VS Code)
+The repository includes [.vscode/mcp.json](.vscode/mcp.json) which registers the MCP server with VS Code automatically. Open GitHub Copilot in **Agent mode** and you can query the graph in natural language, e.g.:
+- *"Which ticker has the highest P/E ratio?"*
+- *"Show me all institutions holding more than 5% of AAPL."*
+- *"What insider transactions happened for MSFT in the last quarter?"*
+
+### Claude Desktop
+Add the following to `$env:AppData\Claude\claude_desktop_config.json` (Windows) or `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+```json
+{
+  "mcpServers": {
+    "mcp-memgraph": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "-e", "MCP_TRANSPORT=stdio",
+        "-e", "MEMGRAPH_URL=bolt://host.docker.internal:7687",
+        "memgraph-mcp"
+      ]
+    }
+  }
+}
+```
+
+## Database schema
 Database schema is defined in [Models](src/db/models.py)
 
 ![Financial_KG](img/Financial_KG.png)

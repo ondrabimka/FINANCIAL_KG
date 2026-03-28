@@ -7,6 +7,12 @@ services:
       - "7444:7444"
     # --schema-info-enabled=True is required for the MCP server to run SHOW SCHEMA INFO
     command: ["--log-level=TRACE", "--schema-info-enabled=True"]
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'RETURN 1;' | mgconsole --host localhost --port 7687 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
   lab:
     image: memgraph/lab:latest
@@ -14,7 +20,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - memgraph
+      memgraph:
+        condition: service_healthy
     environment:
       - QUICK_CONNECT_MG_HOST=memgraph
       - QUICK_CONNECT_MG_PORT=7687
@@ -29,9 +36,14 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - memgraph
+      memgraph:
+        condition: service_healthy
     environment:
       - MEMGRAPH_URL=bolt://memgraph:7687
+      - MCP_TRANSPORT=streamable-http
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8000
+    restart: on-failure
 
   # comment out the following block if you don't want to run the Python script via Docker
   python:
@@ -40,6 +52,7 @@ services:
       dockerfile: src/Dockerfile
     container_name: memgraph-python
     depends_on:
-      - memgraph
+      memgraph:
+        condition: service_healthy
     volumes:
       - ./data:/app/data
