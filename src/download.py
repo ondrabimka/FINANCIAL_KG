@@ -56,7 +56,7 @@ class AsyncDataDownloader:
         logger.info(f"Getting data for ticker {ticker}")
         ticker_handler = TickerHandler(ticker)
         if not ticker_handler.is_valid_ticker():
-            logger.info(f"Valid ticker {ticker}")
+            logger.info(f"Invalid ticker {ticker}")
             return pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
 
         ticker_info = ticker_handler.prepare_ticker_info()
