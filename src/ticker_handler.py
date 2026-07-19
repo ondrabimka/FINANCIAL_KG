@@ -61,8 +61,8 @@ class TickerHandler(yf.Ticker):
         info = self.info
         try:
             info.pop("companyOfficers")
-        except Exception as E:
-            logger.info("no companyOfficers", E)
+        except Exception as e:
+            logger.info(f"No companyOfficers for {self.ticker}: {e}")
         # TODO: Include company officers. Map them maybe?
         # officers = info.pop('companyOfficers')
         # officers = pd.DataFrame(officers)
@@ -86,8 +86,8 @@ class TickerHandler(yf.Ticker):
             major_holders = major_holders.reset_index(drop=True)
             major_holders = major_holders.infer_objects(copy=False).fillna("")
             return major_holders
-        except Exception as E:
-            logger.error("No major_holders found for: ", self.ticker, " with exception: ", E)
+        except Exception as e:
+            logger.error(f"No major_holders found for {self.ticker}: {e}")
             return pd.DataFrame([])
 
     def prepare_insider_purchases(self) -> pd.DataFrame:
@@ -109,8 +109,8 @@ class TickerHandler(yf.Ticker):
             insider_purchases = insider_purchases.reset_index(drop=True)
             insider_purchases = insider_purchases.infer_objects(copy=False).fillna("")
             return insider_purchases
-        except Exception as E:
-            logger.error("No insider_transactions found for: ", self.ticker, " with exception: ", E)
+        except Exception as e:
+            logger.error(f"No insider_transactions found for {self.ticker}: {e}")
             return pd.DataFrame([])
 
     def prepare_institutional_holders(self) -> pd.DataFrame:
@@ -127,8 +127,8 @@ class TickerHandler(yf.Ticker):
             institutional_holders = self.institutional_holders
             institutional_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value", "pctChange"]
             return institutional_holders
-        except Exception as E:
-            logger.error("No institutional_holders found for: ", self.ticker, " with exception: ", E)
+        except Exception as e:
+            logger.error(f"No institutional_holders found for {self.ticker}: {e}")
             return pd.DataFrame([])
 
     def prepare_mutualfund_holders(self) -> pd.DataFrame:
@@ -145,8 +145,8 @@ class TickerHandler(yf.Ticker):
             mutualfund_holders = self.mutualfund_holders
             mutualfund_holders.columns = ["dateReported", "name", "pctHeld", "shares", "value", "pctChange"]
             return mutualfund_holders
-        except Exception as E:
-            logger.error("No mutualfund_holders found for: ", self.ticker, " with exception: ", E)
+        except Exception as e:
+            logger.error(f"No mutualfund_holders found for {self.ticker}: {e}")
             return pd.DataFrame([])
 
     def prepare_insider_transactions(self) -> pd.DataFrame:
@@ -162,8 +162,8 @@ class TickerHandler(yf.Ticker):
             insider_transactions = self.insider_transactions
             insider_transactions.columns = ["shares", "value", "url", "transaction_text", "name", "position", "transaction", "startDate", "ownership"]
             return insider_transactions
-        except Exception as E:
-            logger.error("No insider_transactions found for: ", self.ticker, " with exception: ", E)
+        except Exception as e:
+            logger.error(f"No insider_transactions found for {self.ticker}: {e}")
             return pd.DataFrame([])
 
     def prepare_insider_roster_holders(self) -> pd.DataFrame:
@@ -192,8 +192,8 @@ class TickerHandler(yf.Ticker):
             else:
                 return pd.DataFrame([])
 
-        except Exception as E:
-            logger.error("No insider_roster_holders found for: ", self.ticker, " with exception: ", E)
+        except Exception as e:
+            logger.error(f"No insider_roster_holders found for {self.ticker}: {e}")
             return pd.DataFrame([])
 
     def prepare_news(self):
@@ -264,8 +264,8 @@ class TickerHandler(yf.Ticker):
             news_df = pd.DataFrame(data=parsed_news_list, columns=["uuid", "title", "publisher", "link", "providerPublishTime", "summary", "description"])
             return news_df
 
-        except Exception as E:
-            logger.error("No news found for: ", self.ticker, " with exception: ", E)
+        except Exception as e:
+            logger.error(f"No news found for {self.ticker}: {e}")
             return pd.DataFrame([])
 
     def is_valid_ticker(self) -> bool:
@@ -280,8 +280,8 @@ class TickerHandler(yf.Ticker):
         try:
             self.info
             return True
-        except Exception as E:
-            logger.error("Invalid ticker: ", self.ticker, " with exception: ", E)
+        except Exception as e:
+            logger.error(f"Invalid ticker {self.ticker}: {e}")
             return False
 
     @staticmethod

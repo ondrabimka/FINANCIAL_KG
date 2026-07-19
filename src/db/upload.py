@@ -72,6 +72,8 @@ class DataUploader:
     def upload_insider_transaction_data(self):
         data = pd.read_csv(self.file_path / "insider_transaction.csv")
         for _, row in data.iterrows():
+            insider = None
+            insider_transaction = None
             try:
                 insider = InsiderHolder(**row.to_dict())
                 insider = insider.save(self.memgraph)
@@ -84,18 +86,20 @@ class DataUploader:
             except Exception as e:
                 logger.error(f"Error uploading insider transaction {row['name'], row['startDate']}: {e}, for index {_}")
 
-            try:
-                relationship = Created(_start_node_id=insider._id, _end_node_id=insider_transaction._id)
-                relationship.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error creating relationship between {row['name']} and {row['ticker']}: {e}")
+            if insider is not None and insider_transaction is not None:
+                try:
+                    relationship = Created(_start_node_id=insider._id, _end_node_id=insider_transaction._id)
+                    relationship.save(self.memgraph)
+                except Exception as e:
+                    logger.error(f"Error creating relationship between {row['name']} and {row['ticker']}: {e}")
 
-            try:
-                ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
-                relationship = Involves(_start_node_id=insider_transaction._id, _end_node_id=ticker._id)
-                relationship.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
+            if insider_transaction is not None:
+                try:
+                    ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
+                    relationship = Involves(_start_node_id=insider_transaction._id, _end_node_id=ticker._id)
+                    relationship.save(self.memgraph)
+                except Exception as e:
+                    logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
 
         logger.info("Uploaded insider transaction data")
 
@@ -149,7 +153,7 @@ class DataUploader:
                 relationship = About_NT(_start_node_id=news._id, _end_node_id=ticker._id)
                 relationship.save(self.memgraph)
             except Exception as e:
-                logger.error(f"Error creating relationship between {row['title']} and {row['name']}: {e}")
+                logger.error(f"Error creating relationship between {row['title']} and {row['ticker']}: {e}")
 
     def reupload_all_data(self):
         logger.info("Reuploading all data")
