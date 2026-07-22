@@ -56,6 +56,15 @@ The repository includes [.vscode/mcp.json](.vscode/mcp.json) which registers the
 - *"Show me all institutions holding more than 5% of AAPL."*
 - *"What insider transactions happened for MSFT in the last quarter?"*
 
+Repository-level Copilot coding guidance is stored in [.github/copilot-instructions.md](.github/copilot-instructions.md).
+
+Specialized Copilot prompt agents are available in [.github/prompts](.github/prompts):
+- `ingestion-operations-agent.prompt.md`
+- `graph-schema-agent.prompt.md`
+- `cypher-analysis-agent.prompt.md`
+- `data-quality-agent.prompt.md`
+- `tests-agent.prompt.md`
+
 ### Claude Desktop
 Add the following to `$env:AppData\Claude\claude_desktop_config.json` (Windows) or `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
 ```json

@@ -42,6 +42,35 @@ class DataUploader:
         logger.info("Deleting all data from the database")
         self.memgraph.execute("MATCH (n) DETACH DELETE n")
 
+    @staticmethod
+    def _is_missing(value) -> bool:
+        if value is None:
+            return True
+        if isinstance(value, float) and pd.isna(value):
+            return True
+        if isinstance(value, str) and value.strip() == "":
+            return True
+        return False
+
+    def _load_or_create_unique_node(self, node_cls, unique_field: str, payload: dict, context: str):
+        unique_value = payload.get(unique_field)
+        if self._is_missing(unique_value):
+            logger.error(f"Cannot upsert {context}: missing unique field '{unique_field}'")
+            return None
+
+        try:
+            return node_cls(**{unique_field: unique_value}).load(self.memgraph)
+        except Exception:
+            pass
+
+        try:
+            node = node_cls(**payload)
+            node.save(self.memgraph)
+            return node
+        except Exception as e:
+            logger.error(f"Error upserting {context} ({unique_field}={unique_value}): {e}")
+            return None
+
     def upload_ticker_data(self):
         data = pd.read_csv(self.file_path / "ticker_info.csv").replace({np.nan: None})
         for _, row in data.iterrows():
@@ -53,107 +82,152 @@ class DataUploader:
         logger.info("Uploaded ticker data")
 
     def upload_insider_holder_data(self):
-        data = pd.read_csv(self.file_path / "insider_holder.csv")
+        data = pd.read_csv(self.file_path / "insider_holder.csv").replace({np.nan: None})
         for _, row in data.iterrows():
-            try:
-                insider_holder = InsiderHolder(**row.to_dict())
-                insider_holder.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error uploading insider holder {row['name']}: {e}")
+            row_data = row.to_dict()
+            insider_holder = self._load_or_create_unique_node(
+                InsiderHolder,
+                "name",
+                {"name": row_data.get("name"), "position": row_data.get("position")},
+                "insider holder",
+            )
 
-            try:
-                ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
-                relationship = Holds_IHT(_start_node_id=ticker._id, _end_node_id=insider_holder._id, **row.to_dict())
-                relationship.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
+            if insider_holder is not None:
+                try:
+                    ticker = Ticker(ticker=row_data["ticker"]).load(self.memgraph)
+                    relationship = Holds_IHT(_start_node_id=ticker._id, _end_node_id=insider_holder._id, **row_data)
+                    relationship.save(self.memgraph)
+                except Exception as e:
+                    logger.error(f"Error creating relationship between {row_data['ticker']} and {row_data['name']}: {e}")
         logger.info("Uploaded insider holder data")
 
     def upload_insider_transaction_data(self):
-        data = pd.read_csv(self.file_path / "insider_transaction.csv")
+        data = pd.read_csv(self.file_path / "insider_transaction.csv").replace({np.nan: None})
         for _, row in data.iterrows():
+            row_data = row.to_dict()
             insider = None
             insider_transaction = None
-            try:
-                insider = InsiderHolder(**row.to_dict())
-                insider = insider.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error uploading insider holder {row['name']}: {e}, for index {_}")
+            insider = self._load_or_create_unique_node(
+                InsiderHolder,
+                "name",
+                {"name": row_data.get("name"), "position": row_data.get("position")},
+                "insider holder",
+            )
 
             try:
-                insider_transaction = InsiderTransaction(**row.to_dict())
+                insider_transaction_payload = {
+                    "shares": row_data.get("shares"),
+                    "value": row_data.get("value"),
+                    "transaction_text": row_data.get("transaction_text"),
+                    "position": row_data.get("position"),
+                    "transaction": row_data.get("transaction"),
+                    "startDate": row_data.get("startDate"),
+                    "ownership": row_data.get("ownership"),
+                }
+                insider_transaction = InsiderTransaction(**insider_transaction_payload)
                 insider_transaction.save(self.memgraph)
             except Exception as e:
-                logger.error(f"Error uploading insider transaction {row['name'], row['startDate']}: {e}, for index {_}")
+                logger.error(f"Error uploading insider transaction {row_data.get('name'), row_data.get('startDate')}: {e}, for index {_}")
 
             if insider is not None and insider_transaction is not None:
                 try:
                     relationship = Created(_start_node_id=insider._id, _end_node_id=insider_transaction._id)
                     relationship.save(self.memgraph)
                 except Exception as e:
-                    logger.error(f"Error creating relationship between {row['name']} and {row['ticker']}: {e}")
+                    logger.error(f"Error creating relationship between {row_data.get('name')} and {row_data.get('ticker')}: {e}")
 
             if insider_transaction is not None:
                 try:
-                    ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
+                    ticker = Ticker(ticker=row_data["ticker"]).load(self.memgraph)
                     relationship = Involves(_start_node_id=insider_transaction._id, _end_node_id=ticker._id)
                     relationship.save(self.memgraph)
                 except Exception as e:
-                    logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
+                    logger.error(f"Error creating relationship between {row_data.get('ticker')} and {row_data.get('name')}: {e}")
 
         logger.info("Uploaded insider transaction data")
 
     def upload_institution_data(self):
-        data = pd.read_csv(self.file_path / "institution.csv")
+        data = pd.read_csv(self.file_path / "institution.csv").replace({np.nan: None})
         for _, row in data.iterrows():
-            try:
-                institution = Institution(**row.to_dict())
-                institution.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error uploading institution {row['name']}: {e}")
+            row_data = row.to_dict()
+            institution = self._load_or_create_unique_node(
+                Institution,
+                "name",
+                {"name": row_data.get("name")},
+                "institution",
+            )
 
-            try:
-                ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
-                relationship = Holds_IT(_start_node_id=institution._id, _end_node_id=ticker._id, shares=row["shares"])
-                relationship.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
+            if institution is not None:
+                try:
+                    ticker = Ticker(ticker=row_data["ticker"]).load(self.memgraph)
+                    relationship = Holds_IT(
+                        _start_node_id=institution._id,
+                        _end_node_id=ticker._id,
+                        shares=row_data.get("shares"),
+                        dateReported=row_data.get("dateReported"),
+                        pctHeld=row_data.get("pctHeld"),
+                        value=row_data.get("value"),
+                    )
+                    relationship.save(self.memgraph)
+                except Exception as e:
+                    logger.error(f"Error creating relationship between {row_data['ticker']} and {row_data['name']}: {e}")
 
         logger.info("Uploaded institution data")
 
     def upload_mutual_fund_data(self):
-        data = pd.read_csv(self.file_path / "mutual_fund.csv")
+        data = pd.read_csv(self.file_path / "mutual_fund.csv").replace({np.nan: None})
         for _, row in data.iterrows():
-            try:
-                mutual_fund = MutualFund(**row.to_dict())
-                mutual_fund.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error uploading mutual fund {row['name']}: {e}")
+            row_data = row.to_dict()
+            mutual_fund = self._load_or_create_unique_node(
+                MutualFund,
+                "name",
+                {"name": row_data.get("name")},
+                "mutual fund",
+            )
 
-            try:
-                ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
-                relationship = Holds_MT(_start_node_id=mutual_fund._id, _end_node_id=ticker._id, shares=row["shares"])
-                relationship.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error creating relationship between {row['ticker']} and {row['name']}: {e}")
+            if mutual_fund is not None:
+                try:
+                    ticker = Ticker(ticker=row_data["ticker"]).load(self.memgraph)
+                    relationship = Holds_MT(
+                        _start_node_id=mutual_fund._id,
+                        _end_node_id=ticker._id,
+                        shares=row_data.get("shares"),
+                        dateReported=row_data.get("dateReported"),
+                        pctHeld=row_data.get("pctHeld"),
+                        value=row_data.get("value"),
+                    )
+                    relationship.save(self.memgraph)
+                except Exception as e:
+                    logger.error(f"Error creating relationship between {row_data['ticker']} and {row_data['name']}: {e}")
 
         logger.info("Uploaded mutual fund data")
 
     def upload_news_data(self):
-        data = pd.read_csv(self.file_path / "news.csv")
+        data = pd.read_csv(self.file_path / "news.csv").replace({np.nan: None})
         for _, row in data.iterrows():
-            try:
-                news = News(**row.to_dict())
-                news.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error creating news {row['title']}: {e}")
+            row_data = row.to_dict()
+            news = self._load_or_create_unique_node(
+                News,
+                "uuid",
+                {
+                    "uuid": row_data.get("uuid"),
+                    "title": row_data.get("title"),
+                    "publisher": row_data.get("publisher"),
+                    "link": row_data.get("link"),
+                    "providerPublishTime": row_data.get("providerPublishTime"),
+                    "summary": row_data.get("summary"),
+                    "description": row_data.get("description"),
+                },
+                "news",
+            )
 
-            try:
-                ticker = Ticker(ticker=row["ticker"]).load(self.memgraph)
-                relationship = About_NT(_start_node_id=news._id, _end_node_id=ticker._id)
-                relationship.save(self.memgraph)
-            except Exception as e:
-                logger.error(f"Error creating relationship between {row['title']} and {row['ticker']}: {e}")
+            if news is not None:
+                try:
+                    ticker = Ticker(ticker=row_data["ticker"]).load(self.memgraph)
+                    relationship = About_NT(_start_node_id=news._id, _end_node_id=ticker._id)
+                    relationship.save(self.memgraph)
+                except Exception as e:
+                    logger.error(f"Error creating relationship between {row_data['title']} and {row_data['ticker']}: {e}")
 
     def reupload_all_data(self):
         logger.info("Reuploading all data")
